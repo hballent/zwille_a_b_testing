@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A/B Test Router</title>
+    <script>
+        (function() {
+            function getVariant() {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('v')) {
+                    const variant = urlParams.get('v');
+                    if (variant === 'a' || variant === 'b') {
+                        persistVariant(variant);
+                        return variant;
+                    }
+                }
+                const cookieVariant = document.cookie.split('; ').find(row => row.startsWith('ab_variant='));
+                if (cookieVariant) {
+                    return cookieVariant.split('=')[1];
+                }
+                const localStorageVariant = localStorage.getItem('ab_variant');
+                if (localStorageVariant) {
+                    return localStorageVariant;
+                }
+                const randomVariant = Math.random() < 0.5 ? 'a' : 'b';
+                persistVariant(randomVariant);
+                return randomVariant;
+            }
+
+            function persistVariant(variant) {
+                document.cookie = `ab_variant=${variant}; max-age=2592000; path=/; SameSite=Lax`;
+                try { localStorage.setItem('ab_variant', variant); } catch (e) { /* storage disabled */ }
+            }
+
+            const variant = getVariant();
+            // Use relative paths (no leading slash) so GitHub Pages project sites route correctly.
+            const search = window.location.search || '';
+            // Prefer a direct .html file to avoid server clean-URL rewriting loops.
+            window.location.replace(`${variant}.html${search}`);
+        })();
+    </script>
+</head>
+<body>
+    <noscript>
+        <p>Please enable JavaScript to view the landing page. <a href="a.html">Variant A</a> | <a href="b.html">Variant B</a></p>
+    </noscript>
+</body>
+</html>
