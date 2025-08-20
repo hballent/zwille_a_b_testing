@@ -1,7 +1,7 @@
 window.AnalyticsConfig = {
-    provider: "none",
+    provider: "ga4",
     experimentName: "landing_ab_v1",
-    gaMeasurementId: "G-XXXXXXX",
+    gaMeasurementId: "G-NHLNH28QV3",
     plausibleDomain: "example.com"
 };
 
